@@ -7,133 +7,117 @@
     <style>
         :root {
             --dark-blue: #001f3f;
-            --accent-gold: #ffd700;
-            --bg-color: #f4f7f9;
-            --white: #ffffff;
+            --gold: #ffd700;
+            --success: #28a745;
+            --bg: #f0f4f8;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            color: #333;
+            background-color: var(--bg);
+            margin: 0; padding: 0;
         }
 
         header {
-            background-color: var(--dark-blue);
-            color: var(--white);
-            padding: 20px;
+            background: linear-gradient(135deg, var(--dark-blue), #003366);
+            color: white;
+            padding: 30px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 20px;
-        }
+        .container { max-width: 600px; margin: 30px auto; padding: 0 20px; }
 
         .card {
-            background: var(--white);
-            border-radius: 12px;
+            background: white;
+            border-radius: 15px;
             padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-top: 5px solid var(--dark-blue);
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
         }
 
-        .card h2 {
-            margin-top: 0;
-            color: var(--dark-blue);
-            font-size: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
+        h2 { color: var(--dark-blue); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
         input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
+            width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;
+            box-sizing: border-box; font-size: 15px; transition: border-color 0.3s;
         }
+        input:focus { border-color: var(--dark-blue); outline: none; }
 
         .btn-save {
             background-color: var(--dark-blue);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            font-weight: bold;
+            color: white; border: none; padding: 15px; border-radius: 8px;
+            width: 100%; font-size: 16px; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
         }
 
-        .btn-save:hover { background-color: #003366; }
+        .btn-save:hover { background-color: #003366; transform: translateY(-2px); }
 
-        footer { text-align: center; font-size: 12px; color: #888; margin-top: 20px; }
+        /* تأثير النجاح */
+        .btn-success { background-color: var(--success) !important; }
+        
+        .loading-spinner {
+            display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;
+            margin-left: 10px; vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>OMEGA SMART TV - لوحة التحكم</h1>
+        <h1>OMEGA SMART TV</h1>
+        <p>نظام التحكم الاستراتيجي في البث</p>
     </header>
 
     <div class="container">
-        <!-- Xtream Section -->
+        <!-- Xtream -->
         <div class="card">
-            <h2>إعدادات سيرفر XTREAM</h2>
+            <h2>سيرفر XTREAM</h2>
             <div class="form-group">
-                <label>رابط الهوست (Host URL)</label>
+                <label>الهوست</label>
                 <input type="text" id="xtream-host" placeholder="http://example.com:8080">
             </div>
             <div class="form-group">
-                <label>اسم المستخدم (Username)</label>
-                <input type="text" id="xtream-user" placeholder="أدخل اليوزر">
+                <label>اليوزر</label>
+                <input type="text" id="xtream-user" placeholder="Username">
             </div>
             <div class="form-group">
-                <label>كلمة المرور (Password)</label>
-                <input type="password" id="xtream-pass" placeholder="أدخل الباسورد">
+                <label>الباسورد</label>
+                <input type="password" id="xtream-pass" placeholder="Password">
             </div>
-            <button class="btn-save" onclick="saveXtream()">حفظ إعدادات اكستريم</button>
+            <button class="btn-save" id="btn-xtream" onclick="saveData('xtream')">
+                <span class="loading-spinner" id="spin-xtream"></span>
+                <span id="txt-xtream">حفظ ونشر التعديلات</span>
+            </button>
         </div>
 
-        <!-- Stalker Section -->
+        <!-- Stalker -->
         <div class="card">
-            <h2>إعدادات بوابة STALKER</h2>
+            <h2>بوابة STALKER</h2>
             <div class="form-group">
-                <label>رابط البوابة (Portal URL)</label>
+                <label>رابط البوابة</label>
                 <input type="text" id="stalker-host" placeholder="http://portal.link/c/">
             </div>
             <div class="form-group">
-                <label>الماك أدريس (MAC Address)</label>
+                <label>الماك أدريس</label>
                 <input type="text" id="stalker-mac" placeholder="00:1A:79:XX:XX:XX">
             </div>
-            <button class="btn-save" onclick="saveStalker()">حفظ إعدادات ستالكر</button>
+            <button class="btn-save" id="btn-stalker" onclick="saveData('stalker')">
+                <span class="loading-spinner" id="spin-stalker"></span>
+                <span id="txt-stalker">حفظ ونشر التعديلات</span>
+            </button>
         </div>
-
-        <footer>نظام صيد الروابط المتقدم &copy; 2024</footer>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyC0_qdH9zofBlv6om85FxMaqKyHZM4YMuo",
             authDomain: "ziko-live-tv.firebaseapp.com",
@@ -141,43 +125,59 @@
             storageBucket: "ziko-live-tv.firebasestorage.app",
             messagingSenderId: "744093377903",
             appId: "1:744093377903:web:996489291c6b7b5693f49a",
-            databaseURL: "https://ziko-live-tv-default-rtdb.firebaseio.com" // رابط قاعدة البيانات
+            databaseURL: "https://ziko-live-tv-default-rtdb.europe-west1.firebasedatabase.app" // تم التصحيح هنا
         };
 
-        // بدء تشغيل Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        function saveXtream() {
-            const data = {
-                url: document.getElementById('xtream-host').value,
-                username: document.getElementById('xtream-user').value,
-                password: document.getElementById('xtream-pass').value,
-                mac: null, // تأكيد حذف الماك عند اختيار اكستريم
-                timestamp: new Date().getTime()
-            };
+        function saveData(type) {
+            const btn = document.getElementById('btn-' + type);
+            const txt = document.getElementById('txt-' + type);
+            const spin = document.getElementById('spin-' + type);
             
-            if(!data.url || !data.username || !data.password) return alert("يرجى ملء كافة البيانات");
+            let data = {};
+            if(type === 'xtream') {
+                data = {
+                    url: document.getElementById('xtream-host').value,
+                    username: document.getElementById('xtream-user').value,
+                    password: document.getElementById('xtream-pass').value,
+                    mac: null
+                };
+            } else {
+                data = {
+                    url: document.getElementById('stalker-host').value,
+                    mac: document.getElementById('stalker-mac').value,
+                    username: null, password: null
+                };
+            }
 
-            database.ref('active_server').set(data).then(() => {
-                alert("✅ تم تحديث سيرفر اكستريم بنجاح!");
-            });
-        }
+            if(!data.url) return alert("يرجى إدخال الرابط");
 
-        function saveStalker() {
-            const data = {
-                url: document.getElementById('stalker-host').value,
-                mac: document.getElementById('stalker-mac').value,
-                username: null,
-                password: null,
-                timestamp: new Date().getTime()
-            };
+            // بدء تأثير التحميل
+            btn.disabled = true;
+            spin.style.display = 'inline-block';
+            txt.innerText = "جاري الحفظ...";
 
-            if(!data.url || !data.mac) return alert("يرجى ملء كافة البيانات");
-
-            database.ref('active_server').set(data).then(() => {
-                alert("✅ تم تحديث سيرفر ستالكر بنجاح!");
-            });
+            database.ref('active_server').set(data)
+                .then(() => {
+                    // تأثير النجاح
+                    spin.style.display = 'none';
+                    btn.classList.add('btn-success');
+                    txt.innerText = "✅ تم الحفظ بنجاح!";
+                    
+                    setTimeout(() => {
+                        btn.classList.remove('btn-success');
+                        btn.disabled = false;
+                        txt.innerText = "حفظ ونشر التعديلات";
+                    }, 3000);
+                })
+                .catch(err => {
+                    alert("خطأ: " + err.message);
+                    btn.disabled = false;
+                    spin.style.display = 'none';
+                    txt.innerText = "حاول مرة أخرى";
+                });
         }
     </script>
 </body>
